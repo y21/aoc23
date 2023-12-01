@@ -4,13 +4,10 @@ pub fn part1(input: &str) -> i32 {
     input
         .lines()
         .map(|line| {
-            let mut it = line.bytes().filter_map(|c| {
-                if c.is_ascii_digit() {
-                    Some(i32::from(c - b'0'))
-                } else {
-                    None
-                }
-            });
+            let mut it = line
+                .bytes()
+                .filter(|c| c.is_ascii_digit())
+                .map(|c| i32::from(c - b'0'));
             let first = it.next().unwrap();
             let last = it.last().unwrap_or(first);
 
