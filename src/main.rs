@@ -5,8 +5,10 @@ use std::fs;
 use std::time::Instant;
 
 mod day1;
+mod day2;
+
 fn main() -> Result<(), Box<dyn Error>> {
-    let days = [[day1::part1, day1::part2]];
+    let days = [[day1::part1, day1::part2], [day2::part1, day2::part2]];
 
     println!("Running all solutions");
     for (day_i, day) in days.iter().enumerate() {
