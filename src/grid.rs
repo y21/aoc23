@@ -31,8 +31,19 @@ impl<'a> ByteGridView<'a> {
     pub fn rows(&self) -> usize {
         self.rows
     }
+
     pub fn columns(&self) -> usize {
         self.columns
+    }
+
+    /// Normalize to a row index
+    pub fn norm_to_row(&self, index: usize) -> usize {
+        index / (self.columns() + 1)
+    }
+
+    /// Normalize to a column index
+    pub fn norm_to_col(&self, index: usize) -> usize {
+        index % (self.columns() + 1)
     }
 
     /// Consider this grid as an example:
