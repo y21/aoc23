@@ -7,6 +7,7 @@ use std::time::Instant;
 mod day1;
 mod day2;
 mod day3;
+mod grid;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let days = [
@@ -20,10 +21,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         let day_n = day_n + 1;
 
         let input = fs::read_to_string(format!("inputs/day{day_n}.txt"))?;
+        let input = input.trim_end();
         for (part_n, part) in day.iter().enumerate() {
             let part_n = part_n + 1;
             let time = Instant::now();
-            part(&input);
+            part(input);
             let elapsed = time.elapsed();
             println!("Day {day_n} Part {part_n}: {elapsed:?}");
         }
