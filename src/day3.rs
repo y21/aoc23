@@ -14,40 +14,11 @@ pub fn part1(input: &str) -> i32 {
         let row = mat.start() / (grid.columns() + 1);
         let column = mat.start() % (grid.columns() + 1);
 
-        let mut has_sym = false;
+        let has_symbol = grid
+            .multi_column_neighbors(row, column, column + mat.len())
+            .any(|c| !c.is_ascii_digit() && c != b'.');
 
-        let is_sym = |c: u8| !c.is_ascii_digit() && c != b'.';
-
-        if let Some(above_row) = row.checked_sub(1) {
-            let col_start = column.saturating_sub(1);
-            let col_end = (column + mat.len()).min(grid.columns() - 1);
-
-            has_sym |= grid[above_row][col_start..=col_end]
-                .iter()
-                .copied()
-                .any(is_sym);
-        }
-
-        if !has_sym && row != grid.rows() - 1 {
-            let col_start = column.saturating_sub(1);
-            let col_end = (column + mat.len()).min(grid.columns() - 1);
-
-            has_sym |= grid[row + 1][col_start..=col_end]
-                .iter()
-                .copied()
-                .any(is_sym);
-        }
-
-        if let (Some(left_column), false) = (column.checked_sub(1), has_sym) {
-            has_sym |= is_sym(grid[row][left_column]);
-        }
-
-        let right_column = column + mat.len();
-        if !has_sym && right_column != grid.columns() {
-            has_sym |= is_sym(grid[row][right_column]);
-        }
-
-        if has_sym {
+        if has_symbol {
             sum += mat.as_str().parse::<i32>().unwrap();
         }
     }
@@ -70,37 +41,12 @@ pub fn part2(input: &str) -> i32 {
         let column = mat.start() % (grid.columns() + 1);
         let num = mat.as_str().parse::<i32>().unwrap();
 
-        if let Some(above_row) = row.checked_sub(1) {
-            let col_start = column.saturating_sub(1);
-            let col_end = (column + mat.len()).min(grid.columns() - 1);
-
-            for star_col in col_start..=col_end {
-                if grid[above_row][star_col] == b'*' {
-                    add_at(num, above_row, star_col);
-                }
+        for (neighbor, nrow, ncol) in
+            grid.multi_column_neighbors_with_coordinates(row, column, column + mat.len())
+        {
+            if neighbor == b'*' {
+                add_at(num, nrow, ncol);
             }
-        }
-
-        if row != grid.rows() - 1 {
-            let col_start = column.saturating_sub(1);
-            let col_end = (column + mat.len()).min(grid.columns() - 1);
-
-            for star_col in col_start..=col_end {
-                if grid[row + 1][star_col] == b'*' {
-                    add_at(num, row + 1, star_col);
-                }
-            }
-        }
-
-        if let Some(left_column) = column.checked_sub(1) {
-            if grid[row][left_column] == b'*' {
-                add_at(num, row, left_column);
-            }
-        }
-
-        let right_column = column + mat.len();
-        if right_column != grid.columns() && grid[row][right_column] == b'*' {
-            add_at(num, row, right_column);
         }
     }
 

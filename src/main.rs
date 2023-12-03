@@ -1,4 +1,4 @@
-#![feature(let_chains)]
+#![feature(let_chains, coroutines, iter_from_coroutine)]
 
 use std::error::Error;
 use std::fs;

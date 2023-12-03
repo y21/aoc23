@@ -34,6 +34,63 @@ impl<'a> ByteGridView<'a> {
     pub fn columns(&self) -> usize {
         self.columns
     }
+
+    /// Consider this grid as an example:
+    /// ```
+    /// .........
+    /// ..12345..
+    /// ..6+++7..
+    /// ..89012..
+    /// .........
+    /// ```
+    /// Given the range of `+++`, the returned iterator will yield all the shown numbers.
+    pub fn multi_column_neighbors(
+        &self,
+        row: usize,
+        col_from: usize,
+        col_to: usize,
+    ) -> impl Iterator<Item = u8> + '_ {
+        self.multi_column_neighbors_with_coordinates(row, col_from, col_to)
+            .map(|(c, ..)| c)
+    }
+
+    pub fn multi_column_neighbors_with_coordinates(
+        &self,
+        row: usize,
+        col_from: usize,
+        col_to: usize,
+    ) -> impl Iterator<Item = (u8, usize, usize)> + '_ {
+        std::iter::from_coroutine(move || {
+            // Row up top
+            if let Some(above_row) = row.checked_sub(1) {
+                let col_start = col_from.saturating_sub(1);
+                let col_end = col_to.min(self.columns() - 1);
+
+                for (i, &c) in self[above_row][col_start..=col_end].iter().enumerate() {
+                    yield (c, above_row, col_start + i);
+                }
+            }
+
+            // Row below
+            if row != self.rows() - 1 {
+                let col_start = col_from.saturating_sub(1);
+                let col_end = col_to.min(self.columns() - 1);
+
+                for (i, &c) in self[row + 1][col_start..=col_end].iter().enumerate() {
+                    yield (c, row + 1, col_start + i);
+                }
+            }
+
+            // Left and right columns
+            if let Some(left_column) = col_from.checked_sub(1) {
+                yield (self[row][left_column], row, left_column);
+            }
+
+            if col_to != self.columns() {
+                yield (self[row][col_to], row, col_to);
+            }
+        })
+    }
 }
 
 impl<'a> Index<usize> for ByteGridView<'a> {
