@@ -1,4 +1,4 @@
-#![feature(let_chains, coroutines, iter_from_coroutine)]
+#![feature(let_chains, coroutines, iter_from_coroutine, iter_next_chunk)]
 
 use std::error::Error;
 use std::fs;
@@ -8,6 +8,7 @@ mod day1;
 mod day2;
 mod day3;
 mod day4;
+mod day5;
 mod grid;
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -16,6 +17,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         [day2::part1, day2::part2],
         [day3::part1, day3::part2],
         [day4::part1, day4::part2],
+        [day5::part1, day5::part2],
     ];
 
     println!("Running all solutions");
