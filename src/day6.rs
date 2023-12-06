@@ -2,6 +2,10 @@ use std::cmp::Ordering;
 
 use aoc::MoreItertools;
 
+fn race(time: i64, time_to_hold: i64) -> i64 {
+    time_to_hold * (time - time_to_hold)
+}
+
 pub fn part1(input: &str) -> i32 {
     let mut lines = input.lines();
     let times = lines
@@ -9,14 +13,14 @@ pub fn part1(input: &str) -> i32 {
         .unwrap()
         .split_ascii_whitespace()
         .skip(1)
-        .map(|v| v.parse::<i32>().unwrap());
+        .map(|v| v.parse::<i64>().unwrap());
 
     let distance = lines
         .next()
         .unwrap()
         .split_ascii_whitespace()
         .skip(1)
-        .map(|v| v.parse::<i32>().unwrap());
+        .map(|v| v.parse::<i64>().unwrap());
 
     times
         .into_iter()
@@ -24,7 +28,7 @@ pub fn part1(input: &str) -> i32 {
         .map(|(time, record)| {
             i32::try_from(
                 (0..=time)
-                    .filter(|&time_to_hold| time_to_hold * (time - time_to_hold) > record)
+                    .filter(|&time_to_hold| race(time, time_to_hold) > record)
                     .count(),
             )
             .unwrap()
@@ -51,25 +55,18 @@ pub fn part2(input: &str) -> i32 {
         .parse_int();
 
     // Find the point at which our distance becomes >= record
-    let smallest_time = (0..)
-        .find(|time_to_hold| time_to_hold * (time - time_to_hold) > record)
-        .unwrap();
+    let smallest_time_pos = (0..)
+        .position(|time_to_hold| race(time, time_to_hold) > record)
+        .unwrap() as i64;
 
-    // Find how many elements there are until we go down
-    let mut last = i64::MIN;
-    let mut count = 0;
-    for time_to_hold in smallest_time.. {
-        let distance = time_to_hold * (time - time_to_hold);
-        match distance.cmp(&last) {
-            Ordering::Equal => return count * 2,
-            Ordering::Less => return count * 2 - 1,
-            Ordering::Greater => {
-                last = distance;
-                count += 1;
-            }
-        }
+    // Everything after the point at which the distance goes down again is "mirrored".
+    // The point at which the distance goes down is always the middle.
+    // So, the count is `(smallest point where distance >= record..=middle) * 2`
+    match race(time, time / 2).cmp(&race(time, time / 2 + 1)) {
+        Ordering::Greater => (((time / 2) - smallest_time_pos + 1) * 2 - 1) as i32,
+        Ordering::Equal => (((time / 2) - smallest_time_pos + 1) * 2) as i32,
+        Ordering::Less => unreachable!(),
     }
-    unreachable!()
 }
 
 #[cfg(test)]
