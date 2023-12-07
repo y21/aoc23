@@ -2,6 +2,7 @@
 
 use std::error::Error;
 use std::fs;
+use std::time::Duration;
 use std::time::Instant;
 
 mod day1;
@@ -10,6 +11,7 @@ mod day3;
 mod day4;
 mod day5;
 mod day6;
+mod day7;
 mod grid;
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -20,9 +22,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         [day4::part1, day4::part2],
         [day5::part1, day5::part2],
         [day6::part1, day6::part2],
+        [day7::part1, day7::part2],
     ];
 
     println!("Running all solutions");
+    let mut total = Duration::ZERO;
     for (day_n, day) in days.iter().enumerate() {
         let day_n = day_n + 1;
 
@@ -34,8 +38,10 @@ fn main() -> Result<(), Box<dyn Error>> {
             part(input);
             let elapsed = time.elapsed();
             println!("Day {day_n} Part {part_n}: {elapsed:?}");
+            total += elapsed;
         }
     }
+    println!("Total: {total:?}");
 
     Ok(())
 }
