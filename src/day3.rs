@@ -4,7 +4,7 @@ use regex::Regex;
 
 use crate::grid::ByteGridView;
 
-pub fn part1(input: &str) -> i32 {
+pub fn part1(input: &str) -> i64 {
     let grid = ByteGridView::from(input);
 
     Regex::new("\\d+")
@@ -15,20 +15,20 @@ pub fn part1(input: &str) -> i32 {
             grid.multi_column_neighbors(row, column, column + number.len())
                 .any(|c| !c.is_ascii_digit() && c != b'.')
         })
-        .map(|(number, ..)| number.as_str().parse::<i32>().unwrap())
+        .map(|(number, ..)| number.as_str().parse::<i64>().unwrap())
         .sum()
 }
 
-pub fn part2(input: &str) -> i32 {
+pub fn part2(input: &str) -> i64 {
     fn filter_star_neighbors<'a, 'b>(
         grid: &'b ByteGridView<'a>,
         row: usize,
         column: usize,
         number: Match<'a>,
-    ) -> impl Iterator<Item = (i32, usize, usize)> + 'b {
+    ) -> impl Iterator<Item = (i64, usize, usize)> + 'b {
         grid.multi_column_neighbors_with_coordinates(row, column, column + number.len())
             .filter(|&(c, ..)| c == b'*')
-            .map(move |(_, nrow, ncol)| (number.as_str().parse::<i32>().unwrap(), nrow, ncol))
+            .map(move |(_, nrow, ncol)| (number.as_str().parse::<i64>().unwrap(), nrow, ncol))
     }
 
     let grid = ByteGridView::from(input);

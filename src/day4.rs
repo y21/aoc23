@@ -15,7 +15,7 @@ fn parse_nums<'a>(arena: &'a Arena<i32>, s: &str) -> &'a [i32] {
     )
 }
 
-pub fn part1(input: &str) -> i32 {
+pub fn part1(input: &str) -> i64 {
     let arena = Arena::new();
     input
         .lines()
@@ -36,7 +36,7 @@ pub fn part1(input: &str) -> i32 {
         .sum()
 }
 
-pub fn part2(input: &str) -> i32 {
+pub fn part2(input: &str) -> i64 {
     let arena = Arena::new();
 
     let cards = input

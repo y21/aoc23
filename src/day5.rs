@@ -26,7 +26,7 @@ fn parse_section(s: &str) -> Vec<ConversionSection> {
         .collect_vec()
 }
 
-pub fn part1(input: &str) -> i32 {
+pub fn part1(input: &str) -> i64 {
     fn find_dest(num: i64, group: &[ConversionSection]) -> i64 {
         group
             .iter()
@@ -52,11 +52,9 @@ pub fn part1(input: &str) -> i32 {
         .map(|seed| maps.iter().fold(seed, |input, map| find_dest(input, map)))
         .min()
         .unwrap()
-        .try_into()
-        .unwrap()
 }
 
-pub fn part2(input: &str) -> i32 {
+pub fn part2(input: &str) -> i64 {
     fn get_outputs(
         input: RangeInclusive<i64>,
         map: &[ConversionSection],
@@ -138,8 +136,6 @@ pub fn part2(input: &str) -> i32 {
         .into_iter()
         .map(|v| *v.start())
         .min()
-        .unwrap()
-        .try_into()
         .unwrap()
 }
 

@@ -87,7 +87,7 @@ impl Ord for CardOrdPart2 {
     }
 }
 
-pub fn part1(input: &str) -> i32 {
+pub fn part1(input: &str) -> i64 {
     input
         .lines()
         .map(|line| {
@@ -113,7 +113,7 @@ pub fn part1(input: &str) -> i32 {
                 _ => unreachable!(),
             };
 
-            (kind, cards, bid.parse::<i32>().unwrap())
+            (kind, cards, bid.parse::<i64>().unwrap())
         })
         .sorted_unstable_by(|(k1, h1, ..), (k2, h2, ..)| {
             (k1, h1.map(CardOrdPart1))
@@ -122,11 +122,11 @@ pub fn part1(input: &str) -> i32 {
         })
         .rev()
         .enumerate()
-        .map(|(rank, (.., bid))| (rank + 1) as i32 * bid)
+        .map(|(rank, (.., bid))| (rank + 1) as i64 * bid)
         .sum()
 }
 
-pub fn part2(input: &str) -> i32 {
+pub fn part2(input: &str) -> i64 {
     input
         .lines()
         .map(|line| {
@@ -154,7 +154,7 @@ pub fn part2(input: &str) -> i32 {
                 _ => unreachable!(),
             };
 
-            (kind, cards, bid.parse::<i32>().unwrap())
+            (kind, cards, bid.parse::<i64>().unwrap())
         })
         .sorted_unstable_by(|(k1, h1, ..), (k2, h2, ..)| {
             (k1, h1.map(CardOrdPart2))
@@ -163,7 +163,7 @@ pub fn part2(input: &str) -> i32 {
         })
         .rev()
         .enumerate()
-        .map(|(rank, (.., bid))| (rank + 1) as i32 * bid)
+        .map(|(rank, (.., bid))| (rank + 1) as i64 * bid)
         .sum()
 }
 

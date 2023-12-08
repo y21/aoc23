@@ -6,7 +6,7 @@ fn race(time: i64, time_to_hold: i64) -> i64 {
     time_to_hold * (time - time_to_hold)
 }
 
-pub fn part1(input: &str) -> i32 {
+pub fn part1(input: &str) -> i64 {
     let mut lines = input.lines();
     let times = lines
         .next()
@@ -26,7 +26,7 @@ pub fn part1(input: &str) -> i32 {
         .into_iter()
         .zip(distance)
         .map(|(time, record)| {
-            i32::try_from(
+            i64::try_from(
                 (0..=time)
                     .filter(|&time_to_hold| race(time, time_to_hold) > record)
                     .count(),
@@ -36,7 +36,7 @@ pub fn part1(input: &str) -> i32 {
         .product()
 }
 
-pub fn part2(input: &str) -> i32 {
+pub fn part2(input: &str) -> i64 {
     let mut lines = input.lines();
     let time = lines
         .next()
@@ -63,8 +63,8 @@ pub fn part2(input: &str) -> i32 {
     // The point at which the distance goes down is always the middle.
     // So, the count is `(smallest point where distance >= record..=middle) * 2`
     match race(time, time / 2).cmp(&race(time, time / 2 + 1)) {
-        Ordering::Greater => (((time / 2) - smallest_time_pos + 1) * 2 - 1) as i32,
-        Ordering::Equal => (((time / 2) - smallest_time_pos + 1) * 2) as i32,
+        Ordering::Greater => ((time / 2) - smallest_time_pos + 1) * 2 - 1,
+        Ordering::Equal => ((time / 2) - smallest_time_pos + 1) * 2,
         Ordering::Less => unreachable!(),
     }
 }

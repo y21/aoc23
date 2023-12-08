@@ -1,8 +1,8 @@
 #[derive(Default, Debug)]
 struct Bag {
-    red: i32,
-    green: i32,
-    blue: i32,
+    red: i64,
+    green: i64,
+    blue: i64,
 }
 
 struct BagIterator<'a>(&'a str);
@@ -15,7 +15,7 @@ impl<'a> Iterator for BagIterator<'a> {
 
         bag.split(", ").try_fold(Bag::default(), |bag, item| {
             let (count, color) = item.split_once(' ')?;
-            let count = count.parse::<i32>().ok()?;
+            let count = count.parse::<i64>().ok()?;
 
             match color {
                 "red" => Some(Bag {
@@ -36,13 +36,13 @@ impl<'a> Iterator for BagIterator<'a> {
     }
 }
 
-pub fn part1(input: &str) -> i32 {
+pub fn part1(input: &str) -> i64 {
     input
         .lines()
         .filter_map(|line| {
             let line = line.strip_prefix("Game ").unwrap();
             let (gid, line) = line.split_once(": ").unwrap();
-            let gid = gid.parse::<i32>().unwrap();
+            let gid = gid.parse::<i64>().unwrap();
 
             BagIterator(line)
                 .all(|bag| bag.red <= 12 && bag.green <= 13 && bag.blue <= 14)
@@ -51,7 +51,7 @@ pub fn part1(input: &str) -> i32 {
         .sum()
 }
 
-pub fn part2(input: &str) -> i32 {
+pub fn part2(input: &str) -> i64 {
     input
         .lines()
         .map(|line| {
