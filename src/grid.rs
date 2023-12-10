@@ -1,6 +1,6 @@
 use std::ops::Index;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct ByteGridView<'a> {
     store: &'a [u8],
     rows: usize,
@@ -99,6 +99,30 @@ impl<'a> ByteGridView<'a> {
 
             if col_to != self.columns() {
                 yield (self[row][col_to], row, col_to);
+            }
+        })
+    }
+
+    pub fn non_diagonal_neighbors(
+        &self,
+        row: usize,
+        col: usize,
+    ) -> impl Iterator<Item = (u8, usize, usize)> + '_ {
+        std::iter::from_coroutine(move || {
+            if let Some(left_column) = col.checked_sub(1) {
+                yield (self[row][left_column], row, left_column);
+            }
+
+            if col != self.columns() - 1 {
+                yield (self[row][col + 1], row, col + 1);
+            }
+
+            if let Some(top_row) = row.checked_sub(1) {
+                yield (self[top_row][col], top_row, col);
+            }
+
+            if row != self.rows() - 1 {
+                yield (self[row + 1][col], row + 1, col);
             }
         })
     }

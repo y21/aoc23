@@ -6,6 +6,7 @@ use std::time::Duration;
 use std::time::Instant;
 
 mod day1;
+mod day10;
 mod day2;
 mod day3;
 mod day4;
@@ -13,6 +14,7 @@ mod day5;
 mod day6;
 mod day7;
 mod day8;
+mod day9;
 mod grid;
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -25,6 +27,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         [day6::part1, day6::part2],
         [day7::part1, day7::part2],
         [day8::part1, day8::part2],
+        [day9::part1, day9::part2],
+        [day10::part1, day10::part2],
     ];
 
     println!("Running all solutions");
