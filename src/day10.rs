@@ -44,20 +44,6 @@ impl Edge {
         }
     }
 
-    fn invert_horizontal(self) -> Self {
-        match self {
-            Self::Left => Self::Right,
-            Self::Right => Self::Left,
-            x => x,
-        }
-    }
-
-    /// 7F, JL => true
-    /// 7L, JF => false
-    fn horizontal_symmetric(this: &[Self], other: &[Self]) -> bool {
-        this.len() == other.len() && this.iter().all(|v| other.contains(&v.invert_horizontal()))
-    }
-
     fn connects_to(direction: Direction, this: &[Self], other: &[Self]) -> bool {
         this.iter().any(|v| match (v, direction) {
             (Edge::Bottom, Direction::Top) => other.contains(&Edge::Top),
@@ -67,6 +53,43 @@ impl Edge {
             _ => false,
         })
     }
+}
+
+fn extend_neighbor_edges(
+    pos: Position,
+    grid: ByteGridView,
+    length: usize,
+    edges: &mut VecDeque<(Position, usize)>,
+    seen: &mut FxHashSet<Position>,
+) -> bool {
+    let sym = grid[pos.y][pos.x];
+
+    let neighbors = grid
+        .non_diagonal_neighbors(pos.y, pos.x)
+        .filter(|&(v, ..)| v != b'.')
+        .filter(|&(_, y, x)| !seen.contains(&Position { y, x }));
+
+    let mut had_neighbor = false;
+    for (dir, dy, dx) in neighbors {
+        let dest = Position { y: dy, x: dx };
+
+        had_neighbor = true;
+
+        let direction = match (dy.cmp(&pos.y), dx.cmp(&pos.x)) {
+            (Ordering::Less, _) => Direction::Bottom,
+            (Ordering::Greater, _) => Direction::Top,
+            (_, Ordering::Less) => Direction::Right,
+            (_, Ordering::Greater) => Direction::Left,
+            _ => unreachable!(),
+        };
+        let this = Edge::of(sym);
+        let other = Edge::of(dir);
+
+        if Edge::connects_to(direction, this, other) {
+            edges.push_back((dest, length + 1));
+        }
+    }
+    had_neighbor
 }
 
 pub fn part1(input: &str) -> i64 {
@@ -82,40 +105,12 @@ pub fn part1(input: &str) -> i64 {
     while let Some((pos, length)) = queue.pop_front() {
         seen.insert(pos);
 
-        let sym = grid[pos.y][pos.x];
-
-        let neighbors = grid
-            .non_diagonal_neighbors(pos.y, pos.x)
-            .filter(|&(v, ..)| v != b'.')
-            .filter(|&(_, y, x)| !seen.contains(&Position { y, x }));
-
-        let mut had_neighbor = false;
-        for (dir, dy, dx) in neighbors {
-            let dest = Position { y: dy, x: dx };
-
-            had_neighbor = true;
-
-            let direction = match (dy.cmp(&pos.y), dx.cmp(&pos.x)) {
-                (Ordering::Less, _) => Direction::Bottom,
-                (Ordering::Greater, _) => Direction::Top,
-                (_, Ordering::Less) => Direction::Right,
-                (_, Ordering::Greater) => Direction::Left,
-                _ => unreachable!(),
-            };
-            let this = Edge::of(sym);
-            let other = Edge::of(dir);
-
-            if Edge::connects_to(direction, this, other) {
-                queue.push_back((dest, length + 1));
-            }
-        }
-
-        if !had_neighbor {
+        if !extend_neighbor_edges(pos, grid, length, &mut queue, &mut seen) {
             return length as i64;
         }
     }
 
-    unreachable!()
+    panic!("reached bfs end without finding a loop?")
 }
 
 pub fn part2(input: &str) -> i64 {
@@ -141,62 +136,37 @@ pub fn part2(input: &str) -> i64 {
 
         seen.insert(pos);
 
-        let sym = grid[pos.y][pos.x];
-
-        let neighbors = grid
-            .non_diagonal_neighbors(pos.y, pos.x)
-            .filter(|&(v, ..)| v != b'.')
-            .filter(|&(_, y, x)| !seen.contains(&Position { y, x }));
-
-        let mut had_neighbor = false;
-        for (dir, dy, dx) in neighbors {
-            let dest = Position { y: dy, x: dx };
-
-            had_neighbor = true;
-
-            let direction = match (dy.cmp(&pos.y), dx.cmp(&pos.x)) {
-                (Ordering::Less, _) => Direction::Bottom,
-                (Ordering::Greater, _) => Direction::Top,
-                (_, Ordering::Less) => Direction::Right,
-                (_, Ordering::Greater) => Direction::Left,
-                _ => unreachable!(),
-            };
-            let this = Edge::of(sym);
-            let other = Edge::of(dir);
-
-            if Edge::connects_to(direction, this, other) {
-                queue.push_back((dest, length + 1));
-            }
-        }
-
-        if !had_neighbor {
+        if !extend_neighbor_edges(pos, grid, length, &mut queue, &mut seen) {
             break;
         }
     }
 
-    let mut depth = 0;
+    // let mut depth = 0;
+    let mut within_pipe = false;
     let mut points = 0;
+
+    // Algorithm:
+    // https://en.wikipedia.org/wiki/Point_in_polygon
+    // (using a bool instead of counter % 2 == 1)
     for y in min_y..=max_y {
         let mut last_pipe = None;
 
-        for x in (min_x..=max_x).rev() {
+        for x in min_x..=max_x {
             let pos = Position { x, y };
             let c = grid[y][x];
 
             if seen.contains(&pos) {
-                let e1 = Edge::of(c);
-                let e2 = last_pipe.map(Edge::of);
-
-                if e2.is_some_and(|e2| Edge::horizontal_symmetric(e1, e2)) {
-                    depth += 1;
+                if (c == b'7' && last_pipe == Some(b'F')) || (c == b'J' && last_pipe == Some(b'L'))
+                {
+                    within_pipe = !within_pipe;
                 } else if c != b'-'
-                    && !(last_pipe == Some(b'7') && c == b'L')
-                    && !(last_pipe == Some(b'J') && c == b'F')
+                    && !(last_pipe == Some(b'L') && c == b'7')
+                    && !(last_pipe == Some(b'F') && c == b'J')
                 {
                     last_pipe = Some(c);
-                    depth += 1;
+                    within_pipe = !within_pipe;
                 }
-            } else if depth % 2 == 1 {
+            } else if within_pipe {
                 points += 1;
             }
         }
