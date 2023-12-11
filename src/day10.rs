@@ -4,12 +4,7 @@ use std::collections::VecDeque;
 use rustc_hash::FxHashSet;
 
 use crate::grid::ByteGridView;
-
-#[derive(Clone, Copy, Hash, Debug, PartialEq, Eq)]
-struct Position {
-    y: usize,
-    x: usize,
-}
+use crate::grid::Position;
 
 #[derive(Copy, Clone)]
 enum Direction {

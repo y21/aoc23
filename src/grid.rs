@@ -1,5 +1,11 @@
 use std::ops::Index;
 
+#[derive(Clone, Copy, Hash, Debug, PartialEq, Eq)]
+pub struct Position {
+    pub y: usize,
+    pub x: usize,
+}
+
 #[derive(Debug, Clone, Copy)]
 pub struct ByteGridView<'a> {
     store: &'a [u8],
