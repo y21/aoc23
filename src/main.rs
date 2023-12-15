@@ -10,6 +10,8 @@ mod day10;
 mod day11;
 mod day12;
 mod day13;
+mod day14;
+mod day15;
 mod day2;
 mod day3;
 mod day4;
@@ -35,6 +37,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         [day11::part1, day11::part2],
         [day12::part1, |_| 0 /* todo */],
         [day13::part1, day13::part2],
+        [day14::part1, |_| 0 /* todo */],
+        [day15::part1, day15::part2],
     ];
 
     println!("Running all solutions");

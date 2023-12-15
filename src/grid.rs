@@ -23,7 +23,7 @@ impl<'a> From<&'a [u8]> for ByteGridView<'a> {
     fn from(s: &'a [u8]) -> Self {
         assert!(!s.ends_with(b"\n"), "grid source ends with newline");
         let columns = memchr::memchr(b'\n', s).expect("missing newline in grid source");
-        let rows = s.len() / columns;
+        let rows = s.iter().filter(|&&v| v == b'\n').count() + 1;
 
         Self {
             store: s,
