@@ -1,4 +1,10 @@
-#![feature(let_chains, coroutines, iter_from_coroutine, iter_next_chunk)]
+#![feature(
+    let_chains,
+    coroutines,
+    iter_from_coroutine,
+    iter_next_chunk,
+    lint_reasons
+)]
 
 use std::error::Error;
 use std::fs;
@@ -13,6 +19,7 @@ mod day13;
 mod day14;
 mod day15;
 mod day16;
+mod day17;
 mod day2;
 mod day3;
 mod day4;
@@ -41,6 +48,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         [day14::part1, |_| 0 /* todo */],
         [day15::part1, day15::part2],
         [day16::part1, day16::part2],
+        [day17::part1, day17::part2],
     ];
 
     println!("Running all solutions");

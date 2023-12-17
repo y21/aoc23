@@ -1,6 +1,6 @@
 use std::ops::Index;
 
-#[derive(Clone, Copy, Hash, Debug, PartialEq, Eq)]
+#[derive(Default, Clone, Copy, Hash, Debug, PartialEq, Eq)]
 pub struct Position {
     pub y: usize,
     pub x: usize,
@@ -31,6 +31,33 @@ impl Position {
             x: self.x,
         }
     }
+}
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum Direction {
+    Up,
+    Down,
+    Left,
+    Right,
+}
+
+impl Direction {
+    pub fn reverse(self) -> Self {
+        match self {
+            Direction::Up => Self::Down,
+            Direction::Down => Self::Up,
+            Direction::Left => Self::Right,
+            Direction::Right => Self::Left,
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub struct Directions {
+    left: bool,
+    right: bool,
+    up: bool,
+    down: bool,
 }
 
 #[derive(Debug, Clone, Copy)]
