@@ -6,6 +6,33 @@ pub struct Position {
     pub x: usize,
 }
 
+impl Position {
+    pub fn right(self) -> Self {
+        Self {
+            y: self.y,
+            x: self.x + 1,
+        }
+    }
+    pub fn down(self) -> Self {
+        Self {
+            y: self.y + 1,
+            x: self.x,
+        }
+    }
+    pub fn left(self) -> Self {
+        Self {
+            y: self.y,
+            x: self.x - 1,
+        }
+    }
+    pub fn up(self) -> Self {
+        Self {
+            y: self.y - 1,
+            x: self.x,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy)]
 pub struct ByteGridView<'a> {
     store: &'a [u8],
@@ -36,6 +63,22 @@ impl<'a> From<&'a [u8]> for ByteGridView<'a> {
 impl<'a> ByteGridView<'a> {
     pub fn rows(&self) -> usize {
         self.rows
+    }
+
+    pub fn is_right_edge(&self, c: usize) -> bool {
+        self.columns() - 1 == c
+    }
+
+    pub fn is_left_edge(&self, c: usize) -> bool {
+        0 == c
+    }
+
+    pub fn is_top_edge(&self, r: usize) -> bool {
+        r == 0
+    }
+
+    pub fn is_bottom_edge(&self, r: usize) -> bool {
+        self.rows() - 1 == r
     }
 
     pub fn columns(&self) -> usize {
